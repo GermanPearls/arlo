@@ -95,3 +95,4 @@ ENV/
 # Test script
 ArloTest.py*
 
+examples/snapshot.jpg

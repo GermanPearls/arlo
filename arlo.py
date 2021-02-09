@@ -16,18 +16,20 @@ limitations under the License.
 
 # 14 Sep 2016, Len Shustek: Added Logout()
 # 17 Jul 2017, Andreas Jakl: Port to Python 3 (https://www.andreasjakl.com/using-netgear-arlo-security-cameras-for-periodic-recording/)
-
 # Import helper classes that are part of this library.
-
-import sys
+# 8 Feb 2021, Amy McGarity: Split out try/except statements. Return data from startStream and triggerStreamSnapshot when they fail to aid in troubleshooting.
 
 try:
     from request import Request
-    from eventstream import EventStream
-    import Queue as queue
 except ImportError:
     from .request import Request
+try:
+    from eventstream import EventStream
+except ImportError:
     from .eventstream import EventStream
+try:
+    import Queue as queue
+except ImportError:
     import queue as queue
    
 # Import all of the other stuff.
@@ -1520,7 +1522,7 @@ class Arlo(object):
             if event.get("from") == basestation.get("deviceId") and event.get("resource") == "cameras/"+camera.get("deviceId") and event.get("properties", {}).get("activityState") == "userStreamActive":
                 return nl.stream_url_dict['url'].replace("rtsp://", "rtsps://")
 
-            return None
+            return event
 
         return self.TriggerAndHandleEvent(basestation, trigger, callback)
 
@@ -1560,8 +1562,9 @@ class Arlo(object):
                 presigned_content_url = event.get("presignedContentUrl")
                 if presigned_content_url is not None:
                     return presigned_content_url
+                return ('no url')
 
-            return None
+            return print(event)
 
         return self.TriggerAndHandleEvent(basestation, trigger, callback)
 
@@ -1577,7 +1580,7 @@ class Arlo(object):
         def callback(self, event):
             if event.get("from") == basestation.get("deviceId") and event.get("resource") == "cameras/"+camera.get("deviceId") and event.get("action") == "fullFrameSnapshotAvailable":
                 return event.get("properties", {}).get("presignedFullFrameSnapshotUrl")
-            return None
+            return (event)
 
         return self.TriggerAndHandleEvent(basestation, trigger, callback)
 

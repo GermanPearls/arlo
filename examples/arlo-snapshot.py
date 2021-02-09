@@ -1,7 +1,11 @@
+import sys, os
+currentDir = os.getcwd()
+parentDir = os.path.dirname(currentDir)
+upTwoDir = os.path.dirname(parentDir)
+sys.path.insert(0,upTwoDir)
+sys.path.insert(0,parentDir)
 from arlo import Arlo
-
-USERNAME = 'user@example.com'
-PASSWORD = 'supersecretpassword'
+from arlocreds import USERNAME, PASSWORD
 
 try:
     # Instantiating the Arlo object automatically calls Login(), which returns an oAuth token that gets cached.
@@ -12,13 +16,22 @@ try:
     # Get the list of devices and filter on device type to only get the basestation.
     # This will return an array which includes all of the basestation's associated metadata.
     basestations = arlo.GetDevices('basestation')
-    
+
     # Get the list of devices and filter on device type to only get the cameras.
     # This will return an array of cameras, including all of the cameras' associated metadata.
     cameras = arlo.GetDevices('camera')
-
+    #camerasById = {}
+    #camerasByIndex = []
+    # setup a hash where each camera deviceId is assocaited with its name for lookup later
+    #for camera in cameras:
+        #camerasById[camera['deviceId']] = camera['deviceName']
+        #camerasByIndex.append(camera['deviceId'])
+    #cameraName = camerasById[cameraId]
+    #cameraIndex = camerasByIndex.index(cameraId)
+    
     # Trigger the snapshot.
-    url = arlo.TriggerFullFrameSnapshot(basestations[0], cameras[0]);
+    url = arlo.TriggerFullFrameSnapshot(basestations[0], cameras[0])
+    #print(url)
     
     # Download snapshot.
     arlo.DownloadSnapshot(url, 'snapshot.jpg')
@@ -41,4 +54,4 @@ try:
     arlo.StopRecording(cameras[0]);
     """
 except Exception as e:
-    print(e):
+    print(e)

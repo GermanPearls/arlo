@@ -15,7 +15,6 @@
 ##
 
 import requests
-from requests.exceptions import HTTPError
 
 class Request(object):
     """HTTP helper class"""
